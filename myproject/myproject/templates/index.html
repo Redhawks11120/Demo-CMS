@@ -1,0 +1,148 @@
+{% load cms_tags menu_tags sekizai_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% page_attribute "page_title" %}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {% render_block "css" %}
+</head>
+<body>
+    {% cms_toolbar %}
+
+    <div style="display: flex; flex-direction: row; justify-content: center; margin: 30px 0 30px 0;">
+        <form action="" method="post">
+            <input name="Employee ID" placeholder="Enter id" id="employee_id">
+            <input name="Employee Name" placeholder="Enter name" id="employee_name">
+            <input name="Employee Department" placeholder="Enter department" id="employee_department">
+            <input name="Date Of Joining" placeholder="Enter date" id="date">
+            <button class="btn-light" type="button" id="btn-add">ADD</button>
+            <button class="btn-info" type="button" id="btn-update">Update</button>
+        </form>
+    </div>
+
+    <p class="text-danger" style="display: flex; justify-content: center;">Để xóa người dùng vui lòng nhấn vào cột EmployeesID!!!!</p>
+    <div style="display: flex; flex-direction: row; justify-content: center">
+        <table class="table" style="max-width: 80%">
+        <thead>
+        <tr>
+            <th>Employee ID</th>
+            <th>Employee Name</th>
+            <th>Employee Department</th>
+            <th>Date Of Joining</th>
+        </tr>
+        </thead>
+        <tbody id="tbl">
+        <tr>
+            <td><input type="checkbox"/></td>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Department</td>
+            <td>Join</td>
+        </tr>
+        </tbody>
+
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        var list = [];
+        $(document).ready(function (){
+            get_data();
+        })
+        $("#btn-add").click(function () {
+            var id = $("#employee_id").val();
+            var name = $("#employee_name").val();
+            var department = $("#employee_department").val();
+            var datejoin = $("#date").val();
+            var request = {
+                EmployeesID: id,
+                EmployeesName: name,
+                Department: department,
+                DateOfJoining: datejoin
+            }
+
+            $.ajax({
+                url: `http://127.0.0.1:9000/employee`,
+                method: 'post',
+                type: 'json',
+                data: JSON.stringify(request),
+                success: function (data){
+                    get_data();
+                    toastr.info('Thêm thành công', '', {timeOut: 5000})
+                },
+                error: function (error){
+                    console.log(error);
+                }
+            })
+        })
+
+        $("#btn-update").click(function () {
+            var id = $("#employee_id").val();
+            var name = $("#employee_name").val();
+            var department = $("#employee_department").val();
+            var datejoin = $("#date").val();
+            var request = {
+                EmployeesID: id,
+                EmployeesName: name,
+                Department: department,
+                DateOfJoining: datejoin
+            }
+
+            $.ajax({
+                url: `http://127.0.0.1:9000/employee`,
+                method: 'put',
+                type: 'json',
+                data: JSON.stringify(request),
+                success: function (data){
+                    get_data();
+                    toastr.options.showEasing = 'swing';
+                    toastr.info('Cập nhật thành công', '', {timeOut: 5000})
+                },
+                error: function (error){
+                    console.log(error);
+                }
+            })
+        })
+
+        function get_data(){
+            $.ajax({
+                url: `http://127.0.0.1:9000/employee`,
+                method: 'get',
+                success: function (data){
+                     list = data;
+                     $('#tbl').empty();
+                    $.each(list, function (key, val) {
+                        $('#tbl').append('<tr><td id='+ val.EmployeesID +'>' + val.EmployeesID + '</td>  <td>' + val.EmployeesName + '</td> <td>' + val.Department + '</td> <td>' + val.DateOfJoining + '</td></tr>');
+                        $('#' + val.EmployeesID).click(function () {
+                            if(confirm("Bạn muốn xóa nhân viên có ID: " + val.EmployeesID)){
+                                $.ajax({
+                                    url: `http://127.0.0.1:9000/employee/` + val.EmployeesID,
+                                    method: 'delete',
+                                    success: function (){
+                                        alert("Bạn đã xóa " + val.EmployeesName + " thành công!!!");
+                                        get_data();
+                                    },
+                                    error: function (err){
+                                        console.log(err);
+                                    }
+                                    })
+                            }else{
+                                return;
+                            }
+                        })
+                    })
+                },
+                error: function (error){
+                    console.log(error);
+                }
+            })
+        }
+
+    </script>
+    {% render_block "js" %}
+</body>
+</html>

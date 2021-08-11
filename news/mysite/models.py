@@ -1,0 +1,13 @@
+from django.db import models
+
+# Create your models here.
+
+class Departments(models.Model):
+    DepartmentsID = models.AutoField(primary_key=True)
+    DepartmentsName = models.CharField(max_length=100)
+
+class Employees(models.Model):
+    EmployeesID = models.AutoField(primary_key=True)
+    EmployeesName = models.CharField(max_length=100)
+    Department = models.CharField(max_length=100)
+    DateOfJoining = models.DateField()
