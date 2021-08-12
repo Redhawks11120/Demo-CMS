@@ -210,7 +210,8 @@ CMS_TEMPLATES = (
     ('fullwidth.html', 'Fullwidth'),
     ('sidebar_left.html', 'Sidebar Left'),
     ('sidebar_right.html', 'Sidebar Right'),
-    ('index.html', 'My Template')
+    ('index.html', 'My Template'),
+    ('departments.html', 'My Template 1')
 )
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     {% render_block "css" %}
 </head>
 <body>
@@ -48,6 +49,11 @@
         </table>
     </div>
 
+    <style type="text/css">
+        #toast-container {
+            margin-top: 50px;
+        }
+    </style>
     <script type="text/javascript">
         var list = [];
         $(document).ready(function (){
@@ -72,7 +78,7 @@
                 data: JSON.stringify(request),
                 success: function (data){
                     get_data();
-                    toastr.info('Thêm thành công', '', {timeOut: 5000})
+                    toastr.success("Thêm thành công");
                 },
                 error: function (error){
                     console.log(error);
@@ -99,8 +105,12 @@
                 data: JSON.stringify(request),
                 success: function (data){
                     get_data();
-                    toastr.options.showEasing = 'swing';
-                    toastr.info('Cập nhật thành công', '', {timeOut: 5000})
+                    toastr.success("Cập nhật thành công");
+                    /*toastr.options={
+                        positionClass: "toast-top-right",
+                        timeOut: 5000
+                    }*/
+
                 },
                 error: function (error){
                     console.log(error);

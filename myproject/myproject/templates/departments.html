@@ -1,0 +1,129 @@
+{% load cms_tags menu_tags sekizai_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% page_attribute "page_title" %}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    {% render_block "css" %}
+</head>
+<body>
+    {% cms_toolbar %}
+
+    <div style="display: flex; flex-direction: row; justify-content: center; margin: 30px 0 30px 0;">
+        <form action="" method="post">
+            <input name="DepartmentsID" placeholder="Enter DepartmentsID" id="department_id">
+            <input name="DepartmentsName" placeholder="Enter DepartmentsName" id="department_name">
+            <button class="btn-light" type="button" id="btn_add">Thêm</button>
+            <button class="btn-info" type="button" id="btn_update">Cập nhật</button>
+        </form>
+    </div>
+    <p class="text-danger" style="display: flex; justify-content: center; margin: 30px 0 30px 0;">Để xóa department vui lòng nhấn vào cột DepartmentsID!!!!</p>
+    <div style="display:flex; flex-direction: row; justify-content: center;">
+        <table style="max-width: 60%;" class="table">
+            <thead>
+                <tr>
+                    <th>DepartmentsID</th>
+                    <th>DepartmentsName</th>
+                </tr>
+            </thead>
+            <tbody id="tbl">
+                <tr>
+                    <td>DepartmentsID Values</td>
+                    <td>DepartmentsName Values</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        var list = [];
+        $(document).ready(function () {
+            get_data();
+        })
+        $("#btn_add").click(function () {
+            var id = $("#department_id").val();
+            var name = $("#department_name").val();
+            var request = {
+                DepartmentsID: id,
+                DepartmentsName: name,
+            }
+
+            $.ajax({
+                url: `http://127.0.0.1:9000/department`,
+                method: 'post',
+                type: 'json',
+                data: JSON.stringify(request),
+                success: function (data) {
+                    get_data();
+                    alert("Thêm thành công!");
+                },
+                error: function (err){
+                    console.log(err)
+                }
+            })
+        })
+        $("#btn_update").click(function () {
+            var id = $("#department_id").val();
+            var name = $("#department_name").val();
+            var request = {
+                DepartmentsID: id,
+                DepartmentsName: name,
+            }
+
+            $.ajax({
+                url: `http://127.0.0.1:9000/department`,
+                method: 'put',
+                type: 'json',
+                data: JSON.stringify(request),
+                success: function (data) {
+                    get_data();
+                    alert("Cập nhật thành công!!");
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            })
+        })
+        function get_data() {
+            $.ajax({
+                url: `http://127.0.0.1:9000/department`,
+                method: 'get',
+                success: function (data) {
+                    list = data;
+                    $("#tbl").empty();
+                    $.each(list, function (key, val){
+                        $('#tbl').append('<tr><td id=' + val.DepartmentsID +'>' + val.DepartmentsID + '</td><td>' + val.DepartmentsName + '</td></tr>');
+                        $('#' + val.DepartmentsID).click(function () {
+                            if(confirm("Bạn muốn xóa department có ID: " + val.DepartmentsID)){
+                                $.ajax({
+                                    url: `http://127.0.0.1:9000/department/` + val.DepartmentsID,
+                                    method: 'delete',
+                                    success: function (data) {
+                                        get_data();
+                                        alert("Xóa thành công!");
+                                    },
+                                    error: function (error) {
+                                        console.log(error);
+                                    }
+                                })
+                            }
+                            else {
+                                return;
+                            }
+                        })
+                    })
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            })
+        }
+    </script>
+    {% render_block "js" %}
+</body>
+</html>
